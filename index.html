@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stylish Click Counter</title>
+    <title>Click Counter Leaderboard</title>
     <style>
         body {
             display: flex;
@@ -10,22 +10,22 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding: 0 50px;
-            font-family: 'Arial', sans-serif;
+            padding: 50px;
+            font-family: Arial, sans-serif;
             background: #f0f2f5;
+            position: relative;
         }
 
         /* Counter Box */
         #counter {
             font-size: 40px;
             padding: 20px 40px;
-            background-color: #ffffff;
+            background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        /* Slight animation when number changes */
         #counter.bump {
             transform: scale(1.2);
             box-shadow: 0 6px 12px rgba(0,0,0,0.2);
@@ -44,40 +44,118 @@
             transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
         }
 
-        /* Hover effect for button */
         #clickButton:hover {
             background-color: #0056b3;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.2);
         }
 
-        /* Active click effect */
         #clickButton:active {
             transform: translateY(1px);
             box-shadow: 0 3px 6px rgba(0,0,0,0.2);
         }
+
+        /* Name input */
+        #nameInput {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        /* Leaderboard */
+        #leaderboard {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 200px;
+        }
+
+        #leaderboard h3 {
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+
+        #leaderboard ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #leaderboard li {
+            margin: 5px 0;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
+    <input type="text" id="nameInput" placeholder="Enter your name" />
     <div id="counter">0</div>
     <button id="clickButton">Click Me!</button>
 
+    <div id="leaderboard">
+        <h3>Top 5</h3>
+        <ul id="topList"></ul>
+    </div>
+
     <script>
         let count = 0;
+        let leaderboard = [];
 
+        const nameInput = document.getElementById('nameInput');
         const button = document.getElementById('clickButton');
         const counterDisplay = document.getElementById('counter');
+        const topList = document.getElementById('topList');
 
         button.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert("Please enter your name before clicking!");
+                return;
+            }
+
             count += 1;
             counterDisplay.textContent = count;
 
-            // Add bump animation
+            // bump animation
             counterDisplay.classList.add('bump');
-            setTimeout(() => {
-                counterDisplay.classList.remove('bump');
-            }, 200);
+            setTimeout(() => counterDisplay.classList.remove('bump'), 200);
+
+            // Update leaderboard
+            updateLeaderboard(name, count);
         });
+
+        function updateLeaderboard(name, score) {
+            // Add or update score
+            const existing = leaderboard.find(item => item.name === name);
+            if (existing) {
+                existing.score = Math.max(existing.score, score);
+            } else {
+                leaderboard.push({name, score});
+            }
+
+            // Sort by highest score
+            leaderboard.sort((a, b) => b.score - a.score);
+
+            // Keep top 5
+            leaderboard = leaderboard.slice(0,5);
+
+            // Display
+            topList.innerHTML = '';
+            leaderboard.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name}: ${item.score}`;
+                topList.appendChild(li);
+            });
+        }
     </script>
 </body>
 </html>
