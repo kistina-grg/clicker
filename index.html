@@ -2,21 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Click Counter Leaderboard</title>
+    <title>Persistent Click Counter Leaderboard</title>
     <style>
         body {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding: 50px;
             font-family: Arial, sans-serif;
             background: #f0f2f5;
             position: relative;
         }
 
-        /* Counter Box */
+        .center-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
         #counter {
             font-size: 40px;
             padding: 20px 40px;
@@ -31,7 +35,6 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.2);
         }
 
-        /* Button Style */
         #clickButton {
             padding: 15px 30px;
             font-size: 20px;
@@ -55,7 +58,6 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.2);
         }
 
-        /* Name input */
         #nameInput {
             position: absolute;
             top: 20px;
@@ -67,7 +69,6 @@
             border: 1px solid #ccc;
         }
 
-        /* Leaderboard */
         #leaderboard {
             position: absolute;
             bottom: 20px;
@@ -98,9 +99,10 @@
 </head>
 <body>
     <input type="text" id="nameInput" placeholder="Enter your name" />
-    <div id="counter">0</div>
-    <button id="clickButton">Click Me!</button>
-
+    <div class="center-container">
+        <div id="counter">0</div>
+        <button id="clickButton">Click Me!</button>
+    </div>
     <div id="leaderboard">
         <h3>Top 5</h3>
         <ul id="topList"></ul>
@@ -114,6 +116,20 @@
         const button = document.getElementById('clickButton');
         const counterDisplay = document.getElementById('counter');
         const topList = document.getElementById('topList');
+
+        // Load leaderboard from localStorage
+        function loadLeaderboard() {
+            const stored = localStorage.getItem('clickLeaderboard');
+            if (stored) {
+                leaderboard = JSON.parse(stored);
+                updateLeaderboardDisplay();
+            }
+        }
+
+        // Save leaderboard to localStorage
+        function saveLeaderboard() {
+            localStorage.setItem('clickLeaderboard', JSON.stringify(leaderboard));
+        }
 
         button.addEventListener('click', () => {
             const name = nameInput.value.trim();
@@ -134,7 +150,6 @@
         });
 
         function updateLeaderboard(name, score) {
-            // Add or update score
             const existing = leaderboard.find(item => item.name === name);
             if (existing) {
                 existing.score = Math.max(existing.score, score);
@@ -142,13 +157,18 @@
                 leaderboard.push({name, score});
             }
 
-            // Sort by highest score
+            // Sort descending
             leaderboard.sort((a, b) => b.score - a.score);
 
             // Keep top 5
             leaderboard = leaderboard.slice(0,5);
 
-            // Display
+            // Update display and save
+            updateLeaderboardDisplay();
+            saveLeaderboard();
+        }
+
+        function updateLeaderboardDisplay() {
             topList.innerHTML = '';
             leaderboard.forEach(item => {
                 const li = document.createElement('li');
@@ -156,6 +176,9 @@
                 topList.appendChild(li);
             });
         }
+
+        // Initialize leaderboard on page load
+        loadLeaderboard();
     </script>
 </body>
 </html>
