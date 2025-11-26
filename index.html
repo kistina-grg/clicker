@@ -19,7 +19,7 @@ function updateLeaderboardDisplay(leaderboard) {
 // Fetch the latest leaderboard from backend
 async function fetchLeaderboard() {
     try {
-        const response = await fetch('http://localhost:32768/leaderboard'); // Replace with your LoadBalancer IP/port
+        const response = await fetch('http://localhost:31589/leaderboard'); // Replace with your LoadBalancer IP/port
         const data = await response.json();
         updateLeaderboardDisplay(data);
     } catch (err) {
@@ -61,3 +61,4 @@ button.addEventListener('click', async () => {
 // Initialize leaderboard on page load
 fetchLeaderboard();
 </script>
+
