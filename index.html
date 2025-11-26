@@ -19,7 +19,7 @@ function updateLeaderboardDisplay(leaderboard) {
 // Fetch the latest leaderboard from backend
 async function fetchLeaderboard() {
     try {
-        const response = await fetch('http://localhost:31589/leaderboard'); // Replace with your LoadBalancer IP/port
+        const response = await fetch('http://localhost:30501/leaderboard'); // Replace with your LoadBalancer IP/port
         const data = await response.json();
         updateLeaderboardDisplay(data);
     } catch (err) {
@@ -44,7 +44,7 @@ button.addEventListener('click', async () => {
 
     // Send click to backend
     try {
-        const response = await fetch('http://localhost:31589/click', { // Replace with your LoadBalancer IP/port
+        const response = await fetch('http://localhost:30501/click', { // Replace with your LoadBalancer IP/port
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name })
@@ -61,4 +61,5 @@ button.addEventListener('click', async () => {
 // Initialize leaderboard on page load
 fetchLeaderboard();
 </script>
+
 
